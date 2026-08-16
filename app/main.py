@@ -4,6 +4,7 @@ from app.api.chat import router as chat_router
 from app.api.fhir import router as fhir_router
 from app.api.clinical import router as clinical_router
 from app.api.rag import router as rag_router
+from app.api.risk import router as risk_router
 from app.core.config import settings
 
 
@@ -21,6 +22,7 @@ app.include_router(chat_router)
 app.include_router(fhir_router)
 app.include_router(clinical_router)
 app.include_router(rag_router)
+app.include_router(risk_router)
 
 
 @app.get("/")

@@ -8,3 +8,8 @@ sentence-transformers
 faiss-cpu
 numpy
 rank-bm25
+pandas
+scikit-learn
+xgboost
+joblib
+shap
