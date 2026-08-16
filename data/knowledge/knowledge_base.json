@@ -1,0 +1,38 @@
+[
+  {
+    "id": "KB001",
+    "title": "HCC Risk Adjustment Overview",
+    "source": "ClinicalOps AI Synthetic Educational Knowledge Base",
+    "content": "Hierarchical Condition Category risk adjustment is used in Medicare Advantage to account for differences in expected healthcare costs across beneficiary populations. Documented diagnoses and demographic information contribute to risk scores that influence risk-adjusted payments. Accurate and supported clinical documentation is important because unsupported or incorrectly documented conditions should not be used to justify risk adjustment."
+  },
+  {
+    "id": "KB002",
+    "title": "FHIR Healthcare Interoperability",
+    "source": "ClinicalOps AI Synthetic Educational Knowledge Base",
+    "content": "FHIR is a healthcare interoperability standard organized around modular resources. Common resources include Patient for demographic information, Condition for diagnoses and health problems, Observation for measurements and clinical findings, MedicationRequest for medication orders, and Encounter for interactions between patients and healthcare services. Resources can reference one another to represent connected clinical information."
+  },
+  {
+    "id": "KB003",
+    "title": "Clinical AI Grounding",
+    "source": "ClinicalOps AI Synthetic Educational Knowledge Base",
+    "content": "Grounded clinical AI systems provide relevant external context to a language model before generating an answer. The model should distinguish information present in retrieved evidence from information that is absent. Grounding can reduce unsupported statements, but retrieval quality, source quality, prompt design, evaluation, and human oversight remain important."
+  },
+  {
+    "id": "KB004",
+    "title": "Retrieval Augmented Generation",
+    "source": "ClinicalOps AI Synthetic Educational Knowledge Base",
+    "content": "Retrieval augmented generation combines information retrieval with language model generation. A user query is converted into a representation that can be compared with indexed knowledge. Relevant passages are retrieved and supplied to the language model as context so the generated response can be based on retrieved evidence rather than relying only on model parameters."
+  },
+  {
+    "id": "KB005",
+    "title": "Patient Risk Modeling",
+    "source": "ClinicalOps AI Synthetic Educational Knowledge Base",
+    "content": "Patient risk modeling uses structured or unstructured clinical features to estimate the probability of a defined outcome. Predictive models such as logistic regression or gradient boosted trees can produce risk estimates, while explainability methods can help identify which input features contributed to a prediction. Predictive model outputs should remain separate from generative language model reasoning and should be evaluated using appropriate held-out data."
+  },
+  {
+    "id": "KB006",
+    "title": "Clinical Data and Language Models",
+    "source": "ClinicalOps AI Synthetic Educational Knowledge Base",
+    "content": "Clinical AI applications may combine structured healthcare data with unstructured clinical text. Structured resources can provide diagnoses, observations, medications, and encounters, while natural language processing can represent information contained in notes and documents. Language models can help summarize or explain retrieved information but should not silently create missing patient facts."
+  }
+]

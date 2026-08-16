@@ -52,6 +52,9 @@ class OllamaService:
         self.base_url = settings.ollama_base_url
         self.model = settings.ollama_model
 
+
+    
+
     async def chat(self, message: str) -> str:
         payload = {
             "model": self.model,
@@ -121,6 +124,67 @@ STRICT RULES:
                         f"{context}\n\n"
                         "QUESTION:\n"
                         f"{message}"
+                    ),
+                },
+            ],
+            "think": False,
+            "stream": False,
+            "options": {
+                "temperature": 0.1,
+            },
+        }
+
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.post(
+                f"{self.base_url}/api/chat",
+                json=payload,
+            )
+
+            response.raise_for_status()
+            data = response.json()
+
+        raw_content = data["message"]["content"]
+
+        return clean_model_response(raw_content)
+
+
+    async def rag_chat(
+        self,
+        question: str,
+        context: str,
+    ) -> str:
+        system_prompt = """
+You are ClinicalOps AI, an educational healthcare AI assistant.
+
+You are answering questions using retrieved healthcare knowledge.
+
+STRICT RULES:
+
+1. Answer only from the retrieved evidence provided to you.
+2. Do not invent healthcare facts that are not supported by the evidence.
+3. If the evidence is insufficient, say:
+   "The retrieved knowledge base does not contain enough information to answer this question."
+4. Do not claim to diagnose or treat patients.
+5. Do not provide personalized treatment recommendations.
+6. Clearly distinguish documented evidence from general interpretation.
+7. Keep responses concise and professional.
+8. Do not expose internal reasoning.
+""".strip()
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        "RETRIEVED EVIDENCE:\n\n"
+                        f"{context}\n\n"
+                        "QUESTION:\n"
+                        f"{question}"
                     ),
                 },
             ],
