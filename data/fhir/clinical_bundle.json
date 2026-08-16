@@ -1,0 +1,529 @@
+{
+  "resourceType": "Bundle",
+  "id": "clinicalops-synthetic-bundle",
+  "type": "collection",
+  "meta": {
+    "tag": [
+      {
+        "system": "https://clinicalops.local/data-classification",
+        "code": "SYNTHETIC",
+        "display": "Synthetic demonstration data"
+      }
+    ]
+  },
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "P001",
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Carter",
+            "given": ["Evelyn"]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1954-03-12"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "P002",
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Brooks",
+            "given": ["Daniel"]
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1966-09-21"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "P003",
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Patel",
+            "given": ["Maya"]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1981-06-04"
+      }
+    },
+
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "C001",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "text": "Type 2 diabetes mellitus"
+        },
+        "subject": {
+          "reference": "Patient/P001"
+        },
+        "onsetDateTime": "2012-05-10"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "C002",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "text": "Essential hypertension"
+        },
+        "subject": {
+          "reference": "Patient/P001"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "C003",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "text": "Congestive heart failure"
+        },
+        "subject": {
+          "reference": "Patient/P001"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "C004",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "text": "Chronic obstructive pulmonary disease"
+        },
+        "subject": {
+          "reference": "Patient/P002"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "C005",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "text": "Hyperlipidemia"
+        },
+        "subject": {
+          "reference": "Patient/P002"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "C006",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "text": "Asthma"
+        },
+        "subject": {
+          "reference": "Patient/P003"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "C007",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "text": "Obesity"
+        },
+        "subject": {
+          "reference": "Patient/P003"
+        }
+      }
+    },
+
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "O001",
+        "status": "final",
+        "code": {
+          "text": "Hemoglobin A1c"
+        },
+        "subject": {
+          "reference": "Patient/P001"
+        },
+        "effectiveDateTime": "2026-07-15T09:00:00-04:00",
+        "valueQuantity": {
+          "value": 8.2,
+          "unit": "%"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "O002",
+        "status": "final",
+        "code": {
+          "text": "Systolic blood pressure"
+        },
+        "subject": {
+          "reference": "Patient/P001"
+        },
+        "effectiveDateTime": "2026-07-15T09:05:00-04:00",
+        "valueQuantity": {
+          "value": 148,
+          "unit": "mmHg"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "O003",
+        "status": "final",
+        "code": {
+          "text": "Estimated glomerular filtration rate"
+        },
+        "subject": {
+          "reference": "Patient/P001"
+        },
+        "effectiveDateTime": "2026-07-15T09:15:00-04:00",
+        "valueQuantity": {
+          "value": 48,
+          "unit": "mL/min/1.73m2"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "O004",
+        "status": "final",
+        "code": {
+          "text": "Oxygen saturation"
+        },
+        "subject": {
+          "reference": "Patient/P002"
+        },
+        "effectiveDateTime": "2026-07-22T10:00:00-04:00",
+        "valueQuantity": {
+          "value": 93,
+          "unit": "%"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "O005",
+        "status": "final",
+        "code": {
+          "text": "Body mass index"
+        },
+        "subject": {
+          "reference": "Patient/P002"
+        },
+        "effectiveDateTime": "2026-07-22T10:05:00-04:00",
+        "valueQuantity": {
+          "value": 29.4,
+          "unit": "kg/m2"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "O006",
+        "status": "final",
+        "code": {
+          "text": "Body mass index"
+        },
+        "subject": {
+          "reference": "Patient/P003"
+        },
+        "effectiveDateTime": "2026-08-02T11:00:00-04:00",
+        "valueQuantity": {
+          "value": 34.2,
+          "unit": "kg/m2"
+        }
+      }
+    },
+
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "M001",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "text": "Metformin"
+        },
+        "subject": {
+          "reference": "Patient/P001"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "M002",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "text": "Lisinopril"
+        },
+        "subject": {
+          "reference": "Patient/P001"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "M003",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "text": "Furosemide"
+        },
+        "subject": {
+          "reference": "Patient/P001"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "M004",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "text": "Albuterol inhaler"
+        },
+        "subject": {
+          "reference": "Patient/P002"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "M005",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "text": "Atorvastatin"
+        },
+        "subject": {
+          "reference": "Patient/P002"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "M006",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "text": "Budesonide-formoterol inhaler"
+        },
+        "subject": {
+          "reference": "Patient/P003"
+        }
+      }
+    },
+
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "E001",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "IMP",
+          "display": "inpatient encounter"
+        },
+        "subject": {
+          "reference": "Patient/P001"
+        },
+        "period": {
+          "start": "2026-07-10T08:00:00-04:00",
+          "end": "2026-07-14T14:30:00-04:00"
+        },
+        "reasonCode": [
+          {
+            "text": "Heart failure exacerbation"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "E002",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "subject": {
+          "reference": "Patient/P002"
+        },
+        "period": {
+          "start": "2026-07-22T09:30:00-04:00",
+          "end": "2026-07-22T10:30:00-04:00"
+        },
+        "reasonCode": [
+          {
+            "text": "COPD follow-up"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "E003",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "subject": {
+          "reference": "Patient/P003"
+        },
+        "period": {
+          "start": "2026-08-02T10:30:00-04:00",
+          "end": "2026-08-02T11:30:00-04:00"
+        },
+        "reasonCode": [
+          {
+            "text": "Asthma follow-up"
+          }
+        ]
+      }
+    }
+  ]
+}

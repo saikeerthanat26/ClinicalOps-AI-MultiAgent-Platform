@@ -85,5 +85,64 @@ class OllamaService:
 
         return clean_model_response(raw_content)
 
+    async def grounded_chat(
+        self,
+        message: str,
+        context: str,
+    ) -> str:
+        grounded_system_prompt = """
+You are ClinicalOps AI analyzing a SYNTHETIC healthcare record
+for educational and software demonstration purposes.
+
+STRICT RULES:
+
+1. Use only information present in the provided patient context.
+2. Do not invent diagnoses, medications, laboratory results,
+   procedures, demographics, or clinical history.
+3. If the requested information is not present, explicitly say:
+   "The provided patient record does not contain that information."
+4. Clearly distinguish documented facts from interpretation.
+5. Do not provide treatment recommendations or claim to diagnose.
+6. Keep the answer concise, professional, and evidence-oriented.
+7. Never expose internal reasoning.
+""".strip()
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": grounded_system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        "PATIENT CONTEXT:\n"
+                        f"{context}\n\n"
+                        "QUESTION:\n"
+                        f"{message}"
+                    ),
+                },
+            ],
+            "think": False,
+            "stream": False,
+            "options": {
+                "temperature": 0.1,
+            },
+        }
+
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.post(
+                f"{self.base_url}/api/chat",
+                json=payload,
+            )
+
+            response.raise_for_status()
+            data = response.json()
+
+        raw_content = data["message"]["content"]
+
+        return clean_model_response(raw_content)
+
 
 ollama_service = OllamaService()

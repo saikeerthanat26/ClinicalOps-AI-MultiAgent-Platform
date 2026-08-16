@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 
 from app.api.chat import router as chat_router
+from app.api.fhir import router as fhir_router
+from app.api.clinical import router as clinical_router
 from app.core.config import settings
 
 
@@ -15,6 +17,8 @@ app = FastAPI(
 
 
 app.include_router(chat_router)
+app.include_router(fhir_router)
+app.include_router(clinical_router)
 
 
 @app.get("/")
