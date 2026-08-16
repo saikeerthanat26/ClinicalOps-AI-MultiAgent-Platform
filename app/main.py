@@ -6,6 +6,7 @@ from app.api.clinical import router as clinical_router
 from app.api.rag import router as rag_router
 from app.api.risk import router as risk_router
 from app.api.nlp import router as nlp_router
+from app.api.agent import router as agent_router
 from app.core.config import settings
 
 
@@ -25,6 +26,7 @@ app.include_router(clinical_router)
 app.include_router(rag_router)
 app.include_router(risk_router)
 app.include_router(nlp_router)
+app.include_router(agent_router)
 
 
 @app.get("/")

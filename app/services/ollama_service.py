@@ -1,4 +1,5 @@
 import re
+import json
 
 import httpx
 
@@ -207,6 +208,161 @@ STRICT RULES:
         raw_content = data["message"]["content"]
 
         return clean_model_response(raw_content)
+    async def route_agent(
+        self,
+        question: str,
+        patient_id: str | None = None,
+        note: str | None = None,
+        risk_features: dict | None = None,
+    ) -> dict[str, str]:
 
+        routing_schema = {
+            "type": "object",
+            "properties": {
+                "route": {
+                    "type": "string",
+                    "enum": [
+                        "fhir",
+                        "rag",
+                        "risk",
+                        "nlp",
+                    ],
+                },
+                "reason": {
+                    "type": "string",
+                },
+            },
+            "required": [
+                "route",
+                "reason",
+            ],
+        }
+
+        available_inputs = (
+            f"patient_id_present={patient_id is not None}\n"
+            f"clinical_note_present={note is not None}\n"
+            f"risk_features_present={risk_features is not None}"
+        )
+
+        supervisor_prompt = f"""
+You are the ClinicalOps AI supervisor.
+
+Your only job is to route the request to exactly one
+specialized agent.
+
+AVAILABLE AGENTS:
+
+fhir:
+Use for questions about a specific patient record,
+conditions, observations, medications, encounters,
+or patient-specific clinical context.
+
+rag:
+Use for general healthcare knowledge questions that
+should be answered from the ClinicalOps healthcare
+knowledge base.
+
+risk:
+Use for synthetic readmission-risk prediction when
+structured risk features are provided.
+
+nlp:
+Use for analyzing a supplied clinical note using
+ClinicalBERT semantic pattern matching.
+
+AVAILABLE INPUTS:
+
+{available_inputs}
+
+USER QUESTION:
+
+{question}
+
+ROUTING RULES:
+
+1. Choose risk only when structured risk features exist.
+2. Choose nlp only when a clinical note exists.
+3. Choose fhir only when a patient ID exists.
+4. General healthcare knowledge should go to rag.
+5. Return a short routing reason, not internal reasoning.
+6. Choose exactly one route.
+""".strip()
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "Return only the requested "
+                        "structured routing result."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": supervisor_prompt,
+                },
+            ],
+            "format": routing_schema,
+            "think": False,
+            "stream": False,
+            "options": {
+                "temperature": 0,
+            },
+        }
+
+        async with httpx.AsyncClient(
+            timeout=120.0
+        ) as client:
+
+            response = await client.post(
+                f"{self.base_url}/api/chat",
+                json=payload,
+            )
+
+            response.raise_for_status()
+
+            data = response.json()
+
+        raw_content = data[
+            "message"
+        ][
+            "content"
+        ]
+
+        cleaned_content = (
+            clean_model_response(
+                raw_content
+            )
+        )
+
+        parsed = json.loads(
+            cleaned_content
+        )
+
+        route = parsed.get(
+            "route",
+            "rag",
+        )
+
+        reason = parsed.get(
+            "reason",
+            "General knowledge route selected.",
+        )
+
+        allowed_routes = {
+            "fhir",
+            "rag",
+            "risk",
+            "nlp",
+        }
+
+        if route not in allowed_routes:
+            route = "rag"
+
+        return {
+            "route": route,
+            "reason": reason,
+        }
 
 ollama_service = OllamaService()
