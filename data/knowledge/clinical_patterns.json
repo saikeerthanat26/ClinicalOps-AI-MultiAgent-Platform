@@ -1,0 +1,85 @@
+[
+  {
+    "id": "CP001",
+    "label": "heart_failure_pattern",
+    "title": "Heart Failure Clinical Pattern",
+    "text": "Synthetic clinical pattern describing a patient with congestive heart failure, volume overload, dyspnea, edema, recent hospitalization for heart failure exacerbation, and use of medications such as diuretics.",
+    "keywords": [
+      "congestive heart failure",
+      "heart failure",
+      "heart failure exacerbation",
+      "volume overload",
+      "furosemide",
+      "diuretic"
+    ]
+  },
+  {
+    "id": "CP002",
+    "label": "diabetes_pattern",
+    "title": "Diabetes Clinical Pattern",
+    "text": "Synthetic clinical pattern describing type 2 diabetes mellitus, elevated hemoglobin A1c, glucose management, chronic metabolic disease, and use of medications such as metformin.",
+    "keywords": [
+      "type 2 diabetes",
+      "diabetes",
+      "hba1c",
+      "hemoglobin a1c",
+      "metformin",
+      "glucose"
+    ]
+  },
+  {
+    "id": "CP003",
+    "label": "renal_impairment_pattern",
+    "title": "Renal Impairment Clinical Pattern",
+    "text": "Synthetic clinical pattern describing reduced kidney function, decreased estimated glomerular filtration rate, chronic renal impairment, renal monitoring, and abnormal kidney-related laboratory findings.",
+    "keywords": [
+      "reduced kidney function",
+      "kidney function",
+      "renal impairment",
+      "renal",
+      "egfr",
+      "glomerular filtration"
+    ]
+  },
+  {
+    "id": "CP004",
+    "label": "copd_pattern",
+    "title": "COPD Clinical Pattern",
+    "text": "Synthetic clinical pattern describing chronic obstructive pulmonary disease, shortness of breath, reduced oxygen saturation, chronic respiratory symptoms, inhaler use, and pulmonary follow-up.",
+    "keywords": [
+      "copd",
+      "chronic obstructive pulmonary disease",
+      "albuterol",
+      "oxygen saturation",
+      "chronic respiratory",
+      "pulmonary"
+    ]
+  },
+  {
+    "id": "CP005",
+    "label": "asthma_pattern",
+    "title": "Asthma Clinical Pattern",
+    "text": "Synthetic clinical pattern describing asthma, episodic wheezing, airway inflammation, shortness of breath, inhaled therapy, and outpatient respiratory follow-up.",
+    "keywords": [
+      "asthma",
+      "wheezing",
+      "airway inflammation",
+      "budesonide",
+      "inhaled therapy"
+    ]
+  },
+  {
+    "id": "CP006",
+    "label": "hypertension_pattern",
+    "title": "Hypertension Clinical Pattern",
+    "text": "Synthetic clinical pattern describing persistent elevated blood pressure, hypertension monitoring, cardiovascular risk factors, antihypertensive medication use, and systolic blood pressure measurements.",
+    "keywords": [
+      "hypertension",
+      "high blood pressure",
+      "elevated blood pressure",
+      "systolic blood pressure",
+      "lisinopril",
+      "antihypertensive"
+    ]
+  }
+]
