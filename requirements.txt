@@ -16,3 +16,4 @@ shap
 torch
 transformers
 langgraph
+mcp[cli]

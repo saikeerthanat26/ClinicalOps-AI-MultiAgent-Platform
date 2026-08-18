@@ -1,21 +1,15 @@
+import json
+
 from app.agents.state import (
     ClinicalOpsAgentState,
 )
 
-from app.nlp.clinical_pattern_service import (
-    clinical_pattern_service,
+from app.services.mcp_client_service import (
+    clinicalops_mcp_client,
 )
 
-from app.services.clinical_service import (
-    clinical_service,
-)
-
-from app.services.rag_service import (
-    rag_service,
-)
-
-from app.services.risk_service import (
-    risk_service,
+from app.services.ollama_service import (
+    ollama_service,
 )
 
 
@@ -52,28 +46,74 @@ async def fhir_agent_node(
                     "for FHIR analysis."
                 ),
                 "grounded": False,
+                "tool_transport": (
+                    "MCP"
+                ),
             },
         }
 
-    answer = (
-        await clinical_service.ask_patient(
-            patient_id=patient_id,
-            question=question,
+    # -----------------------------------------------------
+    # Retrieve patient data THROUGH MCP
+    # -----------------------------------------------------
+
+    mcp_result = (
+        await clinicalops_mcp_client
+        .get_patient_context(
+            patient_id
         )
     )
 
-    if answer is None:
+    if not mcp_result.get(
+        "found",
+        False,
+    ):
 
-        answer = (
-            f"Patient {patient_id} "
-            "was not found."
+        return {
+            "agent_used": (
+                "fhir_agent"
+            ),
+            "agent_result": {
+                "answer": (
+                    f"Patient {patient_id} "
+                    "was not found."
+                ),
+                "patient_id": (
+                    patient_id
+                ),
+                "grounded": False,
+                "tool_transport": (
+                    "MCP"
+                ),
+                "mcp_tool": (
+                    "get_patient_context"
+                ),
+            },
+        }
+
+    patient_context = (
+        mcp_result[
+            "context"
+        ]
+    )
+
+    # -----------------------------------------------------
+    # Qwen receives only MCP-retrieved context
+    # -----------------------------------------------------
+
+    context_text = (
+        json.dumps(
+            patient_context,
+            indent=2,
         )
+    )
 
-        grounded = False
-
-    else:
-
-        grounded = True
+    answer = (
+        await ollama_service
+        .rag_chat(
+            question=question,
+            context=context_text,
+        )
+    )
 
     return {
         "agent_used": (
@@ -81,10 +121,19 @@ async def fhir_agent_node(
         ),
         "agent_result": {
             "answer": answer,
-            "patient_id": patient_id,
-            "grounded": grounded,
+            "patient_id": (
+                patient_id
+            ),
+            "grounded": True,
+            "tool_transport": (
+                "MCP"
+            ),
+            "mcp_tool": (
+                "get_patient_context"
+            ),
         },
     }
+
 
 # ---------------------------------------------------------
 # RAG Agent
@@ -94,20 +143,188 @@ async def rag_agent_node(
     state: ClinicalOpsAgentState,
 ) -> dict:
 
-    result = await rag_service.ask(
-        question=state[
-            "question"
-        ],
-        top_k=3,
+    question = state[
+        "question"
+    ]
+
+    # -----------------------------------------------------
+    # Retrieval THROUGH MCP
+    # -----------------------------------------------------
+
+    mcp_result = (
+        await clinicalops_mcp_client
+        .search_healthcare_knowledge(
+            query=question,
+            top_k=3,
+        )
     )
+
+    relevant = mcp_result.get(
+        "relevant",
+        False,
+    )
+
+    max_dense_score = (
+        mcp_result.get(
+            "max_dense_score",
+            0.0,
+        )
+    )
+
+    # -----------------------------------------------------
+    # Retrieval gate
+    # -----------------------------------------------------
+
+    if not relevant:
+
+        answer = (
+            "The ClinicalOps knowledge base "
+            "does not contain sufficient "
+            "relevant evidence to answer "
+            "this question."
+        )
+
+        return {
+            "agent_used": (
+                "rag_agent"
+            ),
+            "agent_result": {
+                "answer": answer,
+                "retrieval_relevant": (
+                    False
+                ),
+                "generation_used": (
+                    False
+                ),
+                "max_dense_score": (
+                    max_dense_score
+                ),
+                "sources": [],
+                "grounded": True,
+                "tool_transport": (
+                    "MCP"
+                ),
+                "mcp_tool": (
+                    "search_healthcare_knowledge"
+                ),
+            },
+        }
+
+    matches = (
+        mcp_result.get(
+            "matches",
+            [],
+        )
+    )
+
+    # -----------------------------------------------------
+    # Build evidence context for local Qwen
+    # -----------------------------------------------------
+
+    context_parts = []
+
+    for match in matches:
+
+        context_parts.append(
+            (
+                f"Source ID: "
+                f"{match.get('id')}\n"
+                f"Title: "
+                f"{match.get('title')}\n"
+                f"Content: "
+                f"{match.get('content')}"
+            )
+        )
+
+    context_text = (
+        "\n\n".join(
+            context_parts
+        )
+    )
+
+    # -----------------------------------------------------
+    # Grounded generation
+    # -----------------------------------------------------
+
+    answer = (
+        await ollama_service
+        .rag_chat(
+            question=question,
+            context=context_text,
+        )
+    )
+
+    # -----------------------------------------------------
+    # Return compact source metadata
+    # -----------------------------------------------------
+
+    sources = []
+
+    for match in matches:
+
+        sources.append(
+            {
+                "id": (
+                    match.get(
+                        "id"
+                    )
+                ),
+                "title": (
+                    match.get(
+                        "title"
+                    )
+                ),
+                "source": (
+                    match.get(
+                        "source"
+                    )
+                ),
+                "dense_score": (
+                    match.get(
+                        "dense_score"
+                    )
+                ),
+                "bm25_score": (
+                    match.get(
+                        "bm25_score"
+                    )
+                ),
+                "rrf_score": (
+                    match.get(
+                        "rrf_score"
+                    )
+                ),
+                "reranker_score": (
+                    match.get(
+                        "reranker_score"
+                    )
+                ),
+            }
+        )
 
     return {
         "agent_used": (
             "rag_agent"
         ),
         "agent_result": {
-            **result,
+            "answer": answer,
+            "retrieval_relevant": (
+                True
+            ),
+            "generation_used": (
+                True
+            ),
+            "max_dense_score": (
+                max_dense_score
+            ),
+            "sources": sources,
             "grounded": True,
+            "tool_transport": (
+                "MCP"
+            ),
+            "mcp_tool": (
+                "search_healthcare_knowledge"
+            ),
         },
     }
 
@@ -116,7 +333,7 @@ async def rag_agent_node(
 # Risk Agent
 # ---------------------------------------------------------
 
-def risk_agent_node(
+async def risk_agent_node(
     state: ClinicalOpsAgentState,
 ) -> dict:
 
@@ -136,28 +353,40 @@ def risk_agent_node(
                     "were not provided."
                 ),
                 "synthetic_demo": True,
+                "tool_transport": (
+                    "MCP"
+                ),
             },
         }
 
+    # -----------------------------------------------------
+    # XGBoost + SHAP THROUGH MCP
+    # -----------------------------------------------------
+
     result = (
-        risk_service
-        .predict_with_explanation(
-            features=risk_features,
-            top_n=5,
+        await clinicalops_mcp_client
+        .predict_readmission_risk(
+            risk_features
         )
     )
 
-    probability = result[
-        "probability_percent"
-    ]
+    probability = (
+        result[
+            "probability_percent"
+        ]
+    )
 
-    classification = result[
-        "predicted_readmission"
-    ]
+    classification = (
+        result[
+            "predicted_readmission"
+        ]
+    )
 
-    risk_level = result[
-        "risk_level"
-    ]
+    risk_level = (
+        result[
+            "risk_level"
+        ]
+    )
 
     answer = (
         "Synthetic readmission-risk model "
@@ -175,10 +404,11 @@ def risk_agent_node(
         "agent_result": {
             "answer": answer,
             **result,
-            "synthetic_demo": True,
-            "disclaimer": (
-                "Synthetic educational model only. "
-                "Not clinically validated."
+            "tool_transport": (
+                "MCP"
+            ),
+            "mcp_tool": (
+                "predict_readmission_risk"
             ),
         },
     }
@@ -188,7 +418,7 @@ def risk_agent_node(
 # Clinical NLP Agent
 # ---------------------------------------------------------
 
-def nlp_agent_node(
+async def nlp_agent_node(
     state: ClinicalOpsAgentState,
 ) -> dict:
 
@@ -208,20 +438,30 @@ def nlp_agent_node(
                     "for ClinicalBERT analysis."
                 ),
                 "synthetic_demo": True,
+                "tool_transport": (
+                    "MCP"
+                ),
             },
         }
 
+    # -----------------------------------------------------
+    # ClinicalBERT THROUGH MCP
+    # -----------------------------------------------------
+
     result = (
-        clinical_pattern_service
-        .match_patterns(
+        await clinicalops_mcp_client
+        .analyze_clinical_note(
             note=note,
             top_k=3,
         )
     )
 
-    matches = result[
-        "matches"
-    ]
+    matches = (
+        result.get(
+            "matches",
+            [],
+        )
+    )
 
     if matches:
 
@@ -236,8 +476,8 @@ def nlp_agent_node(
         answer = (
             "Top semantic clinical pattern "
             f"matches: {match_summary}. "
-            "These are semantic pattern matches, "
-            "not diagnoses."
+            "These are semantic pattern "
+            "matches, not diagnoses."
         )
 
     else:
@@ -254,10 +494,11 @@ def nlp_agent_node(
         "agent_result": {
             "answer": answer,
             **result,
-            "synthetic_demo": True,
-            "disclaimer": (
-                "Pattern similarity is not a "
-                "diagnosis or treatment recommendation."
+            "tool_transport": (
+                "MCP"
+            ),
+            "mcp_tool": (
+                "analyze_clinical_note"
             ),
         },
     }
