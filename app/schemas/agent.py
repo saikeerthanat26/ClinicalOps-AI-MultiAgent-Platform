@@ -10,6 +10,10 @@ from app.schemas.risk import (
 )
 
 
+# ---------------------------------------------------------
+# Request
+# ---------------------------------------------------------
+
 class MultiAgentRequest(BaseModel):
 
     question: str = Field(
@@ -43,6 +47,10 @@ class MultiAgentRequest(BaseModel):
     ) = None
 
 
+# ---------------------------------------------------------
+# Response
+# ---------------------------------------------------------
+
 class MultiAgentResponse(BaseModel):
 
     request_id: str
@@ -69,3 +77,25 @@ class MultiAgentResponse(BaseModel):
         str,
         Any,
     ]
+
+    # -----------------------------------------------------
+    # Guardrails
+    # -----------------------------------------------------
+
+    input_guardrail_passed: bool
+
+    input_guardrail_flags: list[str]
+
+    output_guardrail_passed: (
+        bool | None
+    )
+
+    output_guardrail_flags: list[str]
+
+    guardrail_blocked: bool
+
+    # -----------------------------------------------------
+    # Observability
+    # -----------------------------------------------------
+
+    latency_ms: float

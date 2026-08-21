@@ -35,3 +35,6 @@ data/generated/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Runtime observability logs
+logs/*.jsonl

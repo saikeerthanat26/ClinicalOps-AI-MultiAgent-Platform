@@ -1,29 +1,25 @@
 from operator import add
+
 from typing import (
     Annotated,
     Any,
-    Literal,
     TypedDict,
 )
-
-
-AgentRoute = Literal[
-    "fhir",
-    "rag",
-    "risk",
-    "nlp",
-]
 
 
 class ClinicalOpsAgentState(
     TypedDict,
     total=False,
 ):
+
+    # -----------------------------------------------------
+    # Request
+    # -----------------------------------------------------
+
     request_id: str
 
     question: str
 
-    # Current-turn inputs
     patient_id: str | None
 
     note: str | None
@@ -33,7 +29,11 @@ class ClinicalOpsAgentState(
         Any,
     ] | None
 
-    # Persistent thread context
+
+    # -----------------------------------------------------
+    # Thread memory
+    # -----------------------------------------------------
+
     active_patient_id: str | None
 
     conversation_history: Annotated[
@@ -41,12 +41,33 @@ class ClinicalOpsAgentState(
         add,
     ]
 
-    # Supervisor state
-    route: AgentRoute
+
+    # -----------------------------------------------------
+    # Input guardrails
+    # -----------------------------------------------------
+
+    input_guardrail_passed: bool
+
+    input_guardrail_flags: list[str]
+
+    input_guardrail_reason: str
+
+    guardrail_blocked: bool
+
+
+    # -----------------------------------------------------
+    # Supervisor
+    # -----------------------------------------------------
+
+    route: str
 
     route_reason: str
 
-    # Specialist state
+
+    # -----------------------------------------------------
+    # Specialist
+    # -----------------------------------------------------
+
     agent_used: str
 
     agent_result: dict[
@@ -54,9 +75,26 @@ class ClinicalOpsAgentState(
         Any,
     ]
 
-    # Verification state
+
+    # -----------------------------------------------------
+    # Verification
+    # -----------------------------------------------------
+
     verified: bool
 
     verification_notes: list[str]
 
     final_answer: str
+
+
+    # -----------------------------------------------------
+    # Output guardrails
+    # -----------------------------------------------------
+
+    output_guardrail_passed: (
+        bool | None
+    )
+
+    output_guardrail_flags: (
+        list[str]
+    )

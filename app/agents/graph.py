@@ -20,7 +20,6 @@ from app.agents.specialists import (
 )
 
 from app.agents.state import (
-    AgentRoute,
     ClinicalOpsAgentState,
 )
 
@@ -32,14 +31,24 @@ from app.agents.verifier import (
     verifier_node,
 )
 
+from app.guardrails.input_guardrail import (
+    blocked_request_node,
+    input_guardrail_node,
+    route_after_input_guardrail,
+)
+
+from app.guardrails.output_guardrail import (
+    output_guardrail_node,
+)
+
 
 # ---------------------------------------------------------
-# Conditional routing
+# Supervisor routing
 # ---------------------------------------------------------
 
 def route_after_supervisor(
     state: ClinicalOpsAgentState,
-) -> AgentRoute:
+) -> str:
 
     return state[
         "route"
@@ -50,7 +59,9 @@ def route_after_supervisor(
 # Checkpointer
 # ---------------------------------------------------------
 
-checkpointer = InMemorySaver()
+checkpointer = (
+    InMemorySaver()
+)
 
 
 # ---------------------------------------------------------
@@ -61,6 +72,20 @@ builder = StateGraph(
     ClinicalOpsAgentState
 )
 
+
+# ---------------------------------------------------------
+# Nodes
+# ---------------------------------------------------------
+
+builder.add_node(
+    "input_guardrail",
+    input_guardrail_node,
+)
+
+builder.add_node(
+    "blocked_request",
+    blocked_request_node,
+)
 
 builder.add_node(
     "context",
@@ -97,15 +122,50 @@ builder.add_node(
     verifier_node,
 )
 
+builder.add_node(
+    "output_guardrail",
+    output_guardrail_node,
+)
+
 
 # ---------------------------------------------------------
-# START → Context → Supervisor
+# START → Input Guardrail
 # ---------------------------------------------------------
 
 builder.add_edge(
     START,
-    "context",
+    "input_guardrail",
 )
+
+
+# ---------------------------------------------------------
+# Input guardrail routing
+# ---------------------------------------------------------
+
+builder.add_conditional_edges(
+    "input_guardrail",
+    route_after_input_guardrail,
+    {
+        "continue": "context",
+        "blocked": "blocked_request",
+    },
+)
+
+
+# ---------------------------------------------------------
+# Blocked request → END
+# ---------------------------------------------------------
+
+builder.add_edge(
+    "blocked_request",
+    END,
+)
+
+
+# ---------------------------------------------------------
+# Allowed request
+# Context → Supervisor
+# ---------------------------------------------------------
 
 builder.add_edge(
     "context",
@@ -114,7 +174,7 @@ builder.add_edge(
 
 
 # ---------------------------------------------------------
-# Supervisor → specialist
+# Supervisor → Specialist
 # ---------------------------------------------------------
 
 builder.add_conditional_edges(
@@ -130,7 +190,7 @@ builder.add_conditional_edges(
 
 
 # ---------------------------------------------------------
-# Specialist → Verifier
+# Specialists → Verifier
 # ---------------------------------------------------------
 
 builder.add_edge(
@@ -155,17 +215,22 @@ builder.add_edge(
 
 
 # ---------------------------------------------------------
-# Verifier → END
+# Verifier → Output Guardrail → END
 # ---------------------------------------------------------
 
 builder.add_edge(
     "verifier",
+    "output_guardrail",
+)
+
+builder.add_edge(
+    "output_guardrail",
     END,
 )
 
 
 # ---------------------------------------------------------
-# Compile with thread-scoped memory
+# Compile
 # ---------------------------------------------------------
 
 clinicalops_graph = (
