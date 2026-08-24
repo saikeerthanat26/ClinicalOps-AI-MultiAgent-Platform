@@ -17,3 +17,5 @@ torch
 transformers
 langgraph
 mcp[cli]
+streamlit
+pytest
